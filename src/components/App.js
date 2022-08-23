@@ -17,7 +17,7 @@ useEffect(()=>{
   .then((word)=>{
     setWord(word)
   })
-})
+},[])
 
 //funciones manejadoras
 
@@ -31,32 +31,37 @@ const handleKeyDown = (ev) => {
     setNumberOfErrors(numberOfErrors + 1);
   };
 
-  const handleLetter = (ev) => {
-    ev.preventDefault();
-    setLastLetter(ev.currentTarget.value);
-    if (ev.currentTarget.value.search(/[a-zñA-ZÑÁÉÍÓÚáéíóú]/) === -1) {
-      setLastLetter('');
-    }
-  };
+  const handleLastLetter = (ev) => {
+        if (/^[A-Za-zÑñÁáÉéÍíÓóÚúÜü]$/.test(ev.target.value)) {
+          setLastLetter(ev.target.value);
+          setUserLetters([...userLetters, ev.target.value]);
+        }
+      };
 
   //Renderizar cositas
 
   const renderSolutionLetters = () => {
     const wordLetters = word.split('');
-    const wordLettersResult =  wordLetters.map (
-        (letter)=> <li className="letter">{letter}</li>)
-        return wordLettersResult
+     
+    return wordLetters.map((letter, index) =>{
+      const isExist = userLetters.includes(letter.toLowerCase());
+      return <li className="letter" key={index}>{isExist ? letter: ''}</li>;
+    })}
+
+
+    const renderErrorLetters = () =>{
+      const notExist = userLetters.filter((letter) =>word.toLowerCase().includes(letter.toLowerCase()) === false);
+      // Está a medias
+      return 
+
+
+      // const wordLetters = word.split('');
+      // return wordLetters.map((letter, index) =>{
+      //   const isNotExist = userLetters.includes(letter.toLowerCase());
+      //   return <li className="letter" key={index}>{isNotExist ? '' :letter }</li>;
+      // })
+
     }
-
-
-    const handleLastLetter = (ev) => {
-      if (/^[A-Za-zÑñÁáÉéÍíÓóÚúÜü]$/.test(ev.target.value)) {
-        setLastLetter(ev.target.value);
-        setUserLetters([...userLetters, ev.target.value]);
-      }
-    };
-  
-
 
   //Pintado del HTML
 
@@ -76,11 +81,8 @@ const handleKeyDown = (ev) => {
           <div className="error">
             <h2 className="title">Letras falladas:</h2>
             <ul className="letters">
+              {renderErrorLetters()}
               <li className="letter">f</li>
-              <li className="letter">q</li>
-              <li className="letter">h</li>
-              <li className="letter">p</li>
-              <li className="letter">x</li>
             </ul>
           </div>
           <form className="form">
@@ -89,15 +91,15 @@ const handleKeyDown = (ev) => {
             </label>
             <input
               autoFocus
-              autocomplete="off"
+              autoComplete="off"
               className="form__input"
-              maxlength="1"
+              maxLength="1"
               type="text"
               name="last-letter"
               id="last-letter"
               value={lastLetter}
               onKeyDown={handleKeyDown}
-              onChange={handleLetter}
+              onChange={handleLastLetter}
             />
             <button onClick={handleClick}>Incrementar</button>
           </form>
