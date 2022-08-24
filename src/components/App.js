@@ -5,7 +5,6 @@ import callToApi from "../services/callToApi";
 function App() {
 
 //Variables de estado
-  const [numberOfErrors, setNumberOfErrors] = useState(0);
   const [lastLetter, setLastLetter] = useState('');
   const [word, setWord] = useState('');
   const [userLetters, setUserLetters] = useState([]);
@@ -26,10 +25,6 @@ const handleKeyDown = (ev) => {
   ev.target.setSelectionRange(0, 1);
 };
 
-  const handleClick = (ev) => {
-    ev.preventDefault();
-    setNumberOfErrors(numberOfErrors + 1);
-  };
 
   const handleLastLetter = (ev) => {
         if (/^[A-Za-zÑñÁáÉéÍíÓóÚúÜü]$/.test(ev.target.value)) {
@@ -39,6 +34,13 @@ const handleKeyDown = (ev) => {
       };
 
   //Renderizar cositas
+
+  const getNumberOfErrors = () => {
+    const errorLetters = userLetters.filter(
+      (letter) => word.includes(letter) === false
+    );
+    return errorLetters.length;
+  };
 
   const renderSolutionLetters = () => {
     const wordLetters = word.split('');
@@ -52,15 +54,9 @@ const handleKeyDown = (ev) => {
     const renderErrorLetters = () =>{
       const notExist = userLetters.filter((letter) =>word.toLowerCase().includes(letter.toLowerCase()) === false);
       // Está a medias
-      return 
-
-
-      // const wordLetters = word.split('');
-      // return wordLetters.map((letter, index) =>{
-      //   const isNotExist = userLetters.includes(letter.toLowerCase());
-      //   return <li className="letter" key={index}>{isNotExist ? '' :letter }</li>;
-      // })
-
+      return notExist.map((letter, index) =>{
+        return <li className="letter" key={index}>{letter}</li>
+      })
     }
 
   //Pintado del HTML
@@ -82,7 +78,7 @@ const handleKeyDown = (ev) => {
             <h2 className="title">Letras falladas:</h2>
             <ul className="letters">
               {renderErrorLetters()}
-              <li className="letter">f</li>
+              
             </ul>
           </div>
           <form className="form">
@@ -101,10 +97,9 @@ const handleKeyDown = (ev) => {
               onKeyDown={handleKeyDown}
               onChange={handleLastLetter}
             />
-            <button onClick={handleClick}>Incrementar</button>
           </form>
         </section>
-        <section className={`dummy error-${numberOfErrors}`}>
+        <section className={`dummy error-${getNumberOfErrors()}`}>
           <span className="error-13 eye"></span>
           <span className="error-12 eye"></span>
           <span className="error-11 line"></span>
